@@ -175,7 +175,7 @@ fi
 
 PATH_TO_SUGAR_BUILD="/home/paolo/sugarbuild/build.php"
 
-alias sugar_build="php $PATH_TO_SUGAR_BUILD --basedir=./ --specpath=./build_spec.php"
+alias sugar_build="mkdir -p build; php $PATH_TO_SUGAR_BUILD --basedir=./ --specpath=./build_spec.php"
 
 PATH_TO_TOOLS_DIR="/var/www/workdir/tools"
 
@@ -184,6 +184,12 @@ alias list_convert="php $PATH_TO_TOOLS_DIR/listconvert.php --basedir=./ --filepa
 alias detail_convert="php $PATH_TO_TOOLS_DIR/detailconvert.php --basedir=./ --filepath=./detailviewdefs.php"
 
 alias subpanel_convert="php $PATH_TO_TOOLS_DIR/subpanelconvert.php --basedir=./ --filepath=./subpanels/default.php"
+
+alias build_spec_create="php $PATH_TO_TOOLS_DIR/build_spec_create.php --basedir=./"
+
+alias build_spec="build_spec_create > build_spec.php"
+
+alias zip_create="build_spec;sugar_build"
 
 function layoutdef_convert {
 	php $PATH_TO_TOOLS_DIR/layoutdefconvert.php --basedir=./ --filepath=./${1}
