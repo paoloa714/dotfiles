@@ -115,6 +115,11 @@ fi
 
 alias errlog="tail -f /var/log/apache2/error.log"
 
+alias ts="tail -f sugarcrm.log"
+
+alias mkdir="mkdir -p"
+
+
 function sugarlog {
 	if [ -z $1 ]
 	then
@@ -124,8 +129,60 @@ function sugarlog {
 	fi
 	tail -f /var/log/${DIR}/sugarcrm.log
 }
+#change dirs and then list directory contents
+function cl (){
+    cd "$1"
+    ll
+}
 
-alias gocode="cd /var/www/"
+function go (){
+    case "$1" in
+        "code")
+            cl /var/www/
+            ;;
+        "work")
+            cl /var/www/workdir/
+            ;;
+        "sugar")
+            cl /var/www/Sugar6/
+            ;;
+        "apache")
+            cl /etc/apache2/
+            ;;
+        "upload")
+            cl upload/upgrades/module
+            ;;
+        "root")
+            go_package_root
+            ;;
+        "repo")
+            go root
+            go ../
+            ;;
+        "wp")
+            go /var/www/PaoloAquino/
+            ;;
+        *) 
+            if [ -d /var/www/workdir/${1}/ ];
+            then
+                cl /var/www/workdir/${1}
+            else
+                cl "$1"
+            fi
+            ;;
+    esac
+}
+
+function go_package_root () {
+PACKAGE_ROOT=$(pwd | sed s#SugarModules.*##)
+cl $PACKAGE_ROOT
+}
+
+
+function .. (){
+    cl ../
+}
+
 alias manifest="php /home/paolo/sugartools/faybus-sugartools/PackageCreator/create.php"
 
 alias manifestdir="mkdir SugarModules&&
@@ -189,7 +246,15 @@ alias build_spec_create="php $PATH_TO_TOOLS_DIR/build_spec_create.php --basedir=
 
 alias build_spec="build_spec_create > build_spec.php"
 
-alias zip_create="build_spec;sugar_build"
+function zip_create {
+    if [ ! -f ./build_spec.php ]; then
+        echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+        build_spec;
+    fi
+    echo '??????????????????????????????????';
+    sugar_build;
+}
+
 
 function layoutdef_convert {
 	php $PATH_TO_TOOLS_DIR/layoutdefconvert.php --basedir=./ --filepath=./${1}
@@ -315,4 +380,16 @@ function convert_all_layoutdefs {
 }
 
 
+function new_package {
+mkdir -p "$1"/SugarModules/custom
+go "$1"
+touch .gitignore
+cat /var/www/workdir/tools/gitignore > .gitignore
+}
 
+function zc {
+    CUR=$(pwd)
+    go_package_root
+    zip_create
+    cd ${CUR}
+}
